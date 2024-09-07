@@ -7,6 +7,7 @@ export default {
   dialect: "sqlite",
   dbCredentials: {
     url: env.DATABASE_URL,
+    authToken: env.TURSO_AUTH_TOKEN,
   },
   tablesFilter: ["unievent_*"],
 } satisfies Config;
