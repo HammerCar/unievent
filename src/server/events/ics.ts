@@ -1,29 +1,27 @@
-import * as ics from "ics";
 import { getEvents } from ".";
 
 export const generateIcs = async () => {
   const events = await getEvents();
 
-  const eventAttributes = events.data.map((event) => {
-    const { from, to, location, name, categories, organizer } =
-      event.attributes;
-    return {
-      title: name.en,
-      start: from,
-      end: to,
-      location: location ?? undefined,
-      categories: categories.data.map((category) => category.id.toString()),
-      //organizer: { name: organizer.data.id.toString() },
-    } satisfies ics.EventAttributes;
-  });
+  const ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//unievent-calendar//NONSGML v1.0//EN
+${events.data
+  .map((event) => {
+    const { from, to, location, name, categories } = event.attributes;
 
-  return new Promise<string>((resolve, reject) => {
-    ics.createEvents(eventAttributes, (error, value) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(value);
-      }
-    });
-  });
+    return `BEGIN:VEVENT
+UID:${event.id}
+DTSTAMP:${new Date().toISOString().split("-").join("").split(":").join("").split(".")[0] + "Z"}
+DTSTART:${new Date(from).toISOString().split("-").join("").split(":").join("").split(".")[0] + "Z"}
+DTEND:${new Date(to).toISOString().split("-").join("").split(":").join("").split(".")[0] + "Z"}
+LOCATION:${location ?? ""}
+SUMMARY:${name.fi ?? name.en}
+CATEGORIES:${categories.data.map((category) => category.id).join(",")}
+END:VEVENT`;
+  })
+  .join("\n")}
+END:VCALENDAR`;
+
+  return ics.split("\n").join("\r\n");
 };
