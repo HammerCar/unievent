@@ -13,7 +13,7 @@ export const generateIcs = async () => {
       end: to,
       location: location ?? undefined,
       categories: categories.data.map((category) => category.id.toString()),
-      organizer: { name: organizer.data.id.toString() },
+      //organizer: { name: organizer.data.id.toString() },
     } satisfies ics.EventAttributes;
   });
 
